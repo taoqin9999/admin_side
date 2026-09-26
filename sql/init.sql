@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS t_user_role;
 DROP TABLE IF EXISTS t_permission;
 DROP TABLE IF EXISTS t_role;
 DROP TABLE IF EXISTS t_user;
+DROP TABLE IF EXISTS t_sys_config;
 
 CREATE TABLE t_user (
   id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -57,6 +58,19 @@ CREATE TABLE t_role_permission (
   PRIMARY KEY (role_id, permission_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色-权限';
 
+-- 系统参数表
+CREATE TABLE t_sys_config (
+  id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+  param_key   VARCHAR(100) NOT NULL                COMMENT '参数键',
+  param_value VARCHAR(500) DEFAULT NULL            COMMENT '参数值',
+  description VARCHAR(200) DEFAULT NULL            COMMENT '描述',
+  regex       VARCHAR(200) DEFAULT NULL            COMMENT '正则校验',
+  create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_param_key (param_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统参数表';
+
 -- 初始密码: 123456  md5值: e10adc3949ba59abbe56e057f20f883e
 INSERT INTO t_user (id, username, password, nickname, status) VALUES
   (1, 'admin', '1fedc5a36d03c185065dd2b323886aa5', '超级管理员', 1),
@@ -90,14 +104,25 @@ INSERT INTO t_permission (id, code, name, url, parent_id, perm_type, icon, sort,
   (30, 'permission:list',  '查看权限列表',       '/api/permission',     3, 2, NULL, 1, 1),
   (31, 'permission:add',   '新增权限',           '/api/permission',     3, 2, NULL, 2, 1),
   (32, 'permission:edit',  '编辑权限',           '/api/permission/*',   3, 2, NULL, 3, 1),
-  (33, 'permission:delete','删除权限',           '/api/permission/*',   3, 2, NULL, 4, 1);
+  (33, 'permission:delete','删除权限',           '/api/permission/*',   3, 2, NULL, 4, 1),
+  -- 系统参数管理 按钮/功能
+  (40, 'sysConfig:list',  '查看系统参数',  '/api/sysConfig',    4, 2, NULL, 1, 1),
+  (41, 'sysConfig:edit',  '修改系统参数值','/api/sysConfig/*',  4, 2, NULL, 2, 1),
+  -- 系统管理下的子菜单 (续)
+  (4,  'sys:config',      '系统参数管理', '/sysConfig',  100, 1, 'Operation', 4, 1);
 
 INSERT INTO t_role_permission (role_id, permission_id) VALUES
   -- admin 拥有所有权限
-  (1,100),(1,1),(1,2),(1,3),(1,10),(1,11),(1,12),(1,13),(1,14),
+  (1,100),(1,1),(1,2),(1,3),(1,4),(1,10),(1,11),(1,12),(1,13),(1,14),
+  (1,40),(1,41),
   (1,20),(1,21),(1,22),(1,23),(1,24),
   (1,30),(1,31),(1,32),(1,33),
   -- test 只有查看权限
-  (2,100),(2,1),(2,2),(2,3),(2,10),(2,20),(2,30);
+  (2,100),(2,1),(2,2),(2,3),(2,4),(2,10),(2,20),(2,30),(2,40);
 
 INSERT INTO t_user_role (user_id, role_id) VALUES (1,1),(2,2);
+
+
+-- 初始系统参数数据
+INSERT INTO t_sys_config (id, param_key, param_value, description, regex) VALUES
+  (1, 'test', '10', '测试参数', '^\\d+$');
