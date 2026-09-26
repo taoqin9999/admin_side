@@ -19,12 +19,13 @@ request.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code !== 200) {
-      if (res.code === 401) {
-        // 未登录或会话过期，直接跳转登录页，不弹错误提示
-        router.push('/login')
-        return Promise.reject(new Error('未登录'))
-      }
+      // 显示服务端返回的错误消息
       ElMessage.error(res.msg || '请求失败')
+      if (res.code === 401) {
+        // 未登录或会话过期，跳转登录页
+        router.push('/login')
+        return Promise.reject(new Error(res.msg || '未登录'))
+      }
       return Promise.reject(new Error(res.msg || '请求失败'))
     }
     return res
@@ -33,6 +34,7 @@ request.interceptors.response.use(
     if (error.response) {
       const status = error.response.status
       if (status === 401) {
+        ElMessage.error('登录已过期，请重新登录')
         router.push('/login')
         return Promise.reject(new Error('未登录'))
       }

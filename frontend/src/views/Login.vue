@@ -61,7 +61,7 @@ const handleLogin = async () => {
       router.push('/')
     }
   } catch (e) {
-    // 错误已在 request 拦截器中处理
+    // 错误由 request 拦截器统一提示
   } finally {
     loading.value = false
   }
