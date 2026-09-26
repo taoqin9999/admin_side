@@ -1,3 +1,5 @@
+> **体验 AI 编程，内容全部由 Trae AI 生成**
+
 # 管理系统（Admin Management System）
 
 基于 **Spring Boot + Shiro + Vue 3 + Element Plus** 的通用后台权限管理系统，实现用户、角色、权限的细粒度管理与控制。
