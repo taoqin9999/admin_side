@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.SysConfigMapper">
+
+    <resultMap id="configMap" type="SysConfig">
+        <id column="id" property="id"/>
+        <result column="param_key" property="paramKey"/>
+        <result column="param_value" property="paramValue"/>
+        <result column="description" property="description"/>
+        <result column="regex" property="regex"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 查询所有系统参数 -->
+    <select id="findAll" resultMap="configMap">
+        select * from t_sys_config order by id
+    </select>
+
+    <!-- 分页查询系统参数（支持参数键模糊搜索） -->
+    <select id="findPage" resultMap="configMap">
+        select * from t_sys_config
+        <where>
+            <if test="paramKey != null and paramKey != ''">
+                and param_key like concat('%', #{paramKey}, '%')
+            </if>
+        </where>
+        order by id limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询系统参数总数 -->
+    <select id="countByCondition" resultType="long">
+        select count(*) from t_sys_config
+        <where>
+            <if test="paramKey != null and paramKey != ''">
+                and param_key like concat('%', #{paramKey}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据 ID 查询 -->
+    <select id="findById" resultMap="configMap">
+        select * from t_sys_config where id = #{id}
+    </select>
+
+    <!-- 更新系统参数值（仅更新参数值和 regex，由后端根据数据库 regex 校验） -->
+    <update id="update">
+        update t_sys_config
+        <set>
+            <if test="paramValue != null">param_value = #{paramValue},</if>
+            <if test="regex != null">regex = #{regex},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
