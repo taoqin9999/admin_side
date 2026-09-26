@@ -59,8 +59,8 @@ CREATE TABLE t_role_permission (
 
 -- 初始密码: 123456  md5值: e10adc3949ba59abbe56e057f20f883e
 INSERT INTO t_user (id, username, password, nickname, status) VALUES
-  (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '超级管理员', 1),
-  (2, 'test',  'e10adc3949ba59abbe56e057f20f883e', '测试账号',   1);
+  (1, 'admin', '1fedc5a36d03c185065dd2b323886aa5', '超级管理员', 1),
+  (2, 'test',  '7a38c13ec5e9310aed731de58bbc4214', '测试账号',   1);
 
 INSERT INTO t_role (id, name, memo) VALUES
   (1, 'admin', '超级管理员'),
