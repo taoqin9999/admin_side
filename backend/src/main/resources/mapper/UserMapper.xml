@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.UserMapper">
+
+    <resultMap id="userMap" type="User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="nickname" property="nickname"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" resultMap="userMap">
+        select * from t_user where username = #{username}
+    </select>
+
+    <!-- 根据 ID 查询用户 -->
+    <select id="findById" resultMap="userMap">
+        select * from t_user where id = #{id}
+    </select>
+
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultMap="userMap">
+        select * from t_user order by create_time desc
+    </select>
+
+    <!-- 分页查询用户（支持用户名、昵称模糊搜索） -->
+    <select id="findPage" resultMap="userMap">
+        select * from t_user
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname like concat('%', #{nickname}, '%')
+            </if>
+        </where>
+        order by create_time desc limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询用户总数（带搜索条件） -->
+    <select id="countByCondition" resultType="long">
+        select count(*) from t_user
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname like concat('%', #{nickname}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 新增用户 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(username, password, nickname, status)
+        values(#{username}, #{password}, #{nickname}, #{status})
+    </insert>
+
+    <!-- 更新用户信息（动态 SQL） -->
+    <update id="update">
+        update t_user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据 ID 删除用户 -->
+    <delete id="deleteById">
+        delete from t_user where id = #{id}
+    </delete>
+
+    <!-- 删除用户-角色关联 -->
+    <delete id="deleteUserRole">
+        delete from t_user_role where user_id = #{userId}
+    </delete>
+
+    <!-- 新增用户-角色关联 -->
+    <insert id="insertUserRole">
+        insert into t_user_role(user_id, role_id) values(#{userId}, #{roleId})
+    </insert>
+
+</mapper>

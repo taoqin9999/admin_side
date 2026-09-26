@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.PermissionMapper">
+
+    <resultMap id="permMap" type="Permission">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="url" property="url"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="perm_type" property="permType"/>
+        <result column="icon" property="icon"/>
+        <result column="sort" property="sort"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 根据用户名查询其权限列表（通过角色间接关联） -->
+    <select id="findByUsername" resultMap="permMap">
+        select distinct p.id, p.code, p.name, p.url, p.parent_id, p.perm_type, p.icon, p.sort, p.status, p.create_time
+        from t_permission p
+        left join t_role_permission rp on p.id = rp.permission_id
+        left join t_role r on r.id = rp.role_id
+        left join t_user_role ur on r.id = ur.role_id
+        left join t_user u on u.id = ur.user_id
+        where u.username = #{username} and p.status = 1
+        order by p.sort
+    </select>
+
+    <!-- 查询所有权限/菜单 -->
+    <select id="findAll" resultMap="permMap">
+        select * from t_permission order by sort
+    </select>
+
+    <!-- 分页查询权限（支持权限标识、名称模糊搜索） -->
+    <select id="findPage" resultMap="permMap">
+        select * from t_permission
+        <where>
+            <if test="code != null and code != ''">
+                and code like concat('%', #{code}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+        order by sort limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询权限总数（带搜索条件） -->
+    <select id="countByCondition" resultType="long">
+        select count(*) from t_permission
+        <where>
+            <if test="code != null and code != ''">
+                and code like concat('%', #{code}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据角色 ID 查询其权限列表 -->
+    <select id="findByRoleId" resultMap="permMap">
+        select p.id, p.code, p.name, p.url, p.parent_id, p.perm_type, p.icon, p.sort, p.status, p.create_time
+        from t_permission p
+        left join t_role_permission rp on p.id = rp.permission_id
+        where rp.role_id = #{roleId}
+        order by p.sort
+    </select>
+
+    <!-- 根据 ID 查询权限 -->
+    <select id="findById" resultMap="permMap">
+        select * from t_permission where id = #{id}
+    </select>
+
+    <!-- 新增权限/菜单 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into t_permission(code, name, url, parent_id, perm_type, icon, sort, status)
+        values(#{code}, #{name}, #{url}, #{parentId}, #{permType}, #{icon}, #{sort}, #{status})
+    </insert>
+
+    <!-- 更新权限信息（动态 SQL） -->
+    <update id="update">
+        update t_permission
+        <set>
+            <if test="code != null">code = #{code},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="url != null">url = #{url},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="permType != null">perm_type = #{permType},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据 ID 删除权限 -->
+    <delete id="deleteById">
+        delete from t_permission where id = #{id}
+    </delete>
+
+</mapper>

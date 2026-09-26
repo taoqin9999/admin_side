@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.RoleMapper">
+
+    <resultMap id="roleMap" type="Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="memo" property="memo"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 根据用户名查询其角色列表 -->
+    <select id="findByUsername" resultMap="roleMap">
+        select r.id, r.name, r.memo, r.create_time
+        from t_role r
+        left join t_user_role ur on r.id = ur.role_id
+        left join t_user u on u.id = ur.user_id
+        where u.username = #{username}
+    </select>
+
+    <!-- 查询所有角色 -->
+    <select id="findAll" resultMap="roleMap">
+        select * from t_role order by create_time desc
+    </select>
+
+    <!-- 分页查询角色（支持角色标识、描述模糊搜索） -->
+    <select id="findPage" resultMap="roleMap">
+        select * from t_role
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="memo != null and memo != ''">
+                and memo like concat('%', #{memo}, '%')
+            </if>
+        </where>
+        order by create_time desc limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询角色总数（带搜索条件） -->
+    <select id="countByCondition" resultType="long">
+        select count(*) from t_role
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="memo != null and memo != ''">
+                and memo like concat('%', #{memo}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据 ID 查询角色 -->
+    <select id="findById" resultMap="roleMap">
+        select * from t_role where id = #{id}
+    </select>
+
+    <!-- 根据用户 ID 查询其角色列表 -->
+    <select id="findByUserId" resultMap="roleMap">
+        select r.id, r.name, r.memo, r.create_time
+        from t_role r
+        left join t_user_role ur on r.id = ur.role_id
+        where ur.user_id = #{userId}
+    </select>
+
+    <!-- 新增角色 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into t_role(name, memo) values(#{name}, #{memo})
+    </insert>
+
+    <!-- 更新角色信息（动态 SQL） -->
+    <update id="update">
+        update t_role
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="memo != null">memo = #{memo},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据 ID 删除角色 -->
+    <delete id="deleteById">
+        delete from t_role where id = #{id}
+    </delete>
+
+    <!-- 删除角色-权限关联 -->
+    <delete id="deleteRolePermission">
+        delete from t_role_permission where role_id = #{roleId}
+    </delete>
+
+    <!-- 新增角色-权限关联 -->
+    <insert id="insertRolePermission">
+        insert into t_role_permission(role_id, permission_id) values(#{roleId}, #{permissionId})
+    </insert>
+
+</mapper>
