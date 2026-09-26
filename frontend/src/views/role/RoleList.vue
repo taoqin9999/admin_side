@@ -159,7 +159,7 @@ const loadData = async () => {
     if (searchForm.value.memo) params.memo = searchForm.value.memo
     const [roleRes, permRes] = await Promise.all([
       getRoleList(params),
-      getPermissionList()
+      getPermissionList({ page: 0, pageSize: 0 })
     ])
     roleList.value = roleRes.data?.list || []
     total.value = roleRes.data?.total || 0
