@@ -69,9 +69,11 @@ INSERT INTO t_role (id, name, memo) VALUES
 -- 权限数据: parent_id=0 表示顶级菜单, perm_type=1菜单 perm_type=2按钮/功能
 INSERT INTO t_permission (id, code, name, url, parent_id, perm_type, icon, sort, status) VALUES
   -- 顶级菜单
-  (1,  'sys:user',         '用户管理', '/user',      0, 1, 'User',     1,  1),
-  (2,  'sys:role',         '角色管理', '/role',      0, 1, 'Role',     2,  1),
-  (3,  'sys:permission',   '权限管理', '/permission',0, 1, 'Lock',     3,  1),
+  (100, 'sys:system',      '系统管理', '/system',   0, 1, 'Setting',  0,  1),
+  -- 系统管理下的子菜单
+  (1,  'sys:user',         '用户管理', '/user',      100, 1, 'User',     1,  1),
+  (2,  'sys:role',         '角色管理', '/role',      100, 1, 'Role',     2,  1),
+  (3,  'sys:permission',   '权限管理', '/permission',100, 1, 'Lock',     3,  1),
   -- 用户管理 按钮/功能
   (10, 'user:list',        '查看用户列表',  '/api/user',        1, 2, NULL, 1, 1),
   (11, 'user:add',         '新增用户',      '/api/user',        1, 2, NULL, 2, 1),
@@ -92,10 +94,10 @@ INSERT INTO t_permission (id, code, name, url, parent_id, perm_type, icon, sort,
 
 INSERT INTO t_role_permission (role_id, permission_id) VALUES
   -- admin 拥有所有权限
-  (1,1),(1,2),(1,3),(1,10),(1,11),(1,12),(1,13),(1,14),
+  (1,100),(1,1),(1,2),(1,3),(1,10),(1,11),(1,12),(1,13),(1,14),
   (1,20),(1,21),(1,22),(1,23),(1,24),
   (1,30),(1,31),(1,32),(1,33),
   -- test 只有查看权限
-  (2,1),(2,2),(2,3),(2,10),(2,20),(2,30);
+  (2,100),(2,1),(2,2),(2,3),(2,10),(2,20),(2,30);
 
 INSERT INTO t_user_role (user_id, role_id) VALUES (1,1),(2,2);
