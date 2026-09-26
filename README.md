@@ -1,4 +1,4 @@
-﻿# 管理系统（Admin Management System）
+# 管理系统（Admin Management System）
 
 基于 **Spring Boot + Shiro + Vue 3 + Element Plus** 的通用后台权限管理系统，实现用户、角色、权限的细粒度管理与控制。
 
@@ -20,7 +20,7 @@
 
 ## 项目结构
 
-`
+```
 E:\code\admin_side\
 ├── backend/                  # 后台（Spring Boot）
 │   ├── src/main/java/        # Java 源码
@@ -32,7 +32,7 @@ E:\code\admin_side\
 │   └── vite.config.js        # Vite 构建配置
 └── sql/
     └── init.sql              # 数据库初始化脚本
-`
+```
 
 ---
 
@@ -71,12 +71,12 @@ E:\code\admin_side\
 
 | 模块         | 功能                                                   | 接口路径                     |
 |--------------|--------------------------------------------------------|------------------------------|
-| 登录认证     | 用户登录（MD5 加密）、获取用户信息、退出登录            | POST /api/login 等         |
-| 用户管理     | 用户列表分页查询、新增、编辑、删除、分配角色            | /api/user/**               |
-| 角色管理     | 角色列表分页查询、新增、编辑、删除、分配权限            | /api/role/**               |
-| 权限管理     | 权限/菜单列表分页查询、新增、编辑、删除、获取菜单树    | /api/permission/**         |
+| 登录认证     | 用户登录（MD5 加密）、获取用户信息、退出登录            | `POST /api/login` 等         |
+| 用户管理     | 用户列表分页查询、新增、编辑、删除、分配角色            | `/api/user/**`               |
+| 角色管理     | 角色列表分页查询、新增、编辑、删除、分配权限            | `/api/role/**`               |
+| 权限管理     | 权限/菜单列表分页查询、新增、编辑、删除、获取菜单树    | `/api/permission/**`         |
 
-**权限控制**：基于 Shiro 注解 @RequiresPermissions 实现细粒度的接口权限校验，如 user:add、ole:delete 等。
+**权限控制**：基于 Shiro 注解 `@RequiresPermissions` 实现细粒度的接口权限校验，如 `user:add`、`role:delete` 等。
 
 ### 前台功能
 
@@ -88,7 +88,7 @@ E:\code\admin_side\
 | 角色管理           | 角色列表分页展示、角色标识/描述模糊搜索、新增/编辑/删除角色、分配权限     |
 | 权限管理           | 权限列表分页展示、权限标识/名称模糊搜索、新增/编辑/删除权限               |
 
-**权限控制**：前端根据后端返回的权限标识列表，通过 -if="hasPerm('xxx')" 控制按钮和功能的显示隐藏。
+**权限控制**：前端根据后端返回的权限标识列表，通过 `v-if="hasPerm('xxx')"` 控制按钮和功能的显示隐藏。
 
 ---
 
@@ -105,55 +105,55 @@ E:\code\admin_side\
 1. **创建数据库**
 
    连接 MySQL 并执行以下命令创建数据库：
-   `sql
+   ```sql
    CREATE DATABASE IF NOT EXISTS server DEFAULT CHARSET utf8mb4;
-   `
+   ```
 
 2. **导入表结构和初始数据**
 
    使用 MySQL 客户端（命令行、Navicat、DBeaver 等）执行初始化脚本：
-   `
+   ```
    E:\code\admin_side\sql\init.sql
-   `
-   脚本会自动创建 	_user、	_role、	_permission 等 5 张表，并插入初始管理员账号和权限数据。
+   ```
+   脚本会自动创建 `t_user`、`t_role`、`t_permission` 等 5 张表，并插入初始管理员账号和权限数据。
 
 3. **修改数据库连接配置**
 
-   编辑 E:\code\admin_side\backend\src\main\resources\application.yml，将数据库连接信息改为你的配置：
-   `yaml
+   编辑 `E:\code\admin_side\backend\src\main\resources\application.yml`，将数据库连接信息改为你的配置：
+   ```yaml
    spring:
      datasource:
        druid:
          url: jdbc:mysql://你的IP:3306/server?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
          username: 你的数据库用户名
          password: 你的数据库密码
-   `
+   ```
 
 4. **启动后台服务**
 
    打开命令行进入 backend 目录，执行：
-   `ash
+   ```bash
    cd E:\code\admin_side\backend
    mvn spring-boot:run
-   `
+   ```
    或者先打包再运行：
-   `ash
+   ```bash
    mvn clean package -DskipTests
    java -jar target\shiro-admin-1.0.0.jar
-   `
+   ```
 
-   启动成功后，控制台会输出类似 Started Application in X.XXX seconds 的日志。
+   启动成功后，控制台会输出类似 `Started Application in X.XXX seconds` 的日志。
 
 5. **验证后台是否启动成功**
 
    浏览器访问：http://localhost:8080/api/login
-   应返回 {"code":401,"msg":"未登录或登录已过期"}
+   应返回 `{"code":401,"msg":"未登录或登录已过期"}`
 
 6. **（可选）访问 Druid 监控**
 
    - 地址：http://localhost:8080/druid/
-   - 用户名：druid
-   - 密码：druid123
+   - 用户名：`druid`
+   - 密码：`druid123`
 
 ---
 
@@ -169,25 +169,25 @@ E:\code\admin_side\
 1. **安装依赖**
 
    打开命令行进入 frontend 目录：
-   `ash
+   ```bash
    cd E:\code\admin_side\frontend
    npm install
-   `
+   ```
 
 2. **启动开发服务器**
 
-   `ash
+   ```bash
    npm run dev
-   `
+   ```
 
    启动成功后，控制台会显示：http://localhost:3000
 
 3. **（可选）构建生产包**
 
-   `ash
+   ```bash
    npm run build
-   `
-   构建产物在 rontend/dist/ 目录下。
+   ```
+   构建产物在 `frontend/dist/` 目录下。
 
 ---
 
@@ -197,7 +197,7 @@ E:\code\admin_side\
 2. 浏览器打开：http://localhost:3000
 3. 进入登录页，使用默认账号登录（见下方）
 
-> **注意**：前台开发服务器已配置代理（ite.config.js），将以 /api 开头的请求转发到 http://localhost:8080，因此无需单独配置跨域。
+> **注意**：前台开发服务器已配置代理（`vite.config.js`），将以 /api 开头的请求转发到 `http://localhost:8080`，因此无需单独配置跨域。
 
 ---
 
@@ -205,10 +205,10 @@ E:\code\admin_side\
 
 | 用户名   | 密码     | 角色     | 权限说明                         |
 |----------|----------|----------|----------------------------------|
-| dmin  | 123456 | 超级管理员 | 拥有所有菜单和操作权限           |
-| 	est   | 123456 | 测试账户   | 仅有查看权限，无新增/编辑/删除权限 |
+| `admin`  | `123456` | 超级管理员 | 拥有所有菜单和操作权限           |
+| `test`   | `123456` | 测试账户   | 仅有查看权限，无新增/编辑/删除权限 |
 
-> 登录页默认填充了 dmin / 123456，可直接点击登录。
+> 登录页默认填充了 `admin / 123456`，可直接点击登录。
 
 ---
 
@@ -217,13 +217,13 @@ E:\code\admin_side\
 ### 统一响应格式
 
 所有接口返回 JSON 格式：
-`json
+```json
 {
   "code": 200,
   "msg": "操作成功",
   "data": { ... }
 }
-`
+```
 
 | code | 说明         |
 |------|--------------|
@@ -236,25 +236,25 @@ E:\code\admin_side\
 
 | 方法     | 路径                          | 权限              | 说明                     |
 |----------|-------------------------------|-------------------|--------------------------|
-| POST     | /api/login                  | 匿名              | 用户登录                 |
-| GET      | /api/login                  | 匿名              | 检测未登录状态（返回401） |
-| GET      | /api/user/info              | 需认证            | 获取当前用户信息         |
-| POST     | /api/logout                 | 需认证            | 退出登录                 |
-| GET      | /api/user                   | user:list       | 用户列表（分页）         |
-| POST     | /api/user                   | user:add        | 新增用户                 |
-| PUT      | /api/user/{id}              | user:edit       | 编辑用户                 |
-| DELETE   | /api/user/{id}              | user:delete     | 删除用户                 |
-| POST     | /api/user/{id}/roles        | user:assignRole | 分配用户角色             |
-| GET      | /api/role                   | ole:list       | 角色列表（分页）         |
-| POST     | /api/role                   | ole:add        | 新增角色                 |
-| PUT      | /api/role/{id}              | ole:edit       | 编辑角色                 |
-| DELETE   | /api/role/{id}              | ole:delete     | 删除角色                 |
-| POST     | /api/role/{id}/permissions  | ole:assignPerm | 分配角色权限             |
-| GET      | /api/permission             | permission:list | 权限列表（分页）         |
-| GET      | /api/permission/tree        | permission:list | 获取菜单树               |
-| POST     | /api/permission             | permission:add  | 新增权限                 |
-| PUT      | /api/permission/{id}        | permission:edit | 编辑权限                 |
-| DELETE   | /api/permission/{id}        | permission:delete | 删除权限               |
+| POST     | `/api/login`                  | 匿名              | 用户登录                 |
+| GET      | `/api/login`                  | 匿名              | 检测未登录状态（返回401） |
+| GET      | `/api/user/info`              | 需认证            | 获取当前用户信息         |
+| POST     | `/api/logout`                 | 需认证            | 退出登录                 |
+| GET      | `/api/user`                   | `user:list`       | 用户列表（分页）         |
+| POST     | `/api/user`                   | `user:add`        | 新增用户                 |
+| PUT      | `/api/user/{id}`              | `user:edit`       | 编辑用户                 |
+| DELETE   | `/api/user/{id}`              | `user:delete`     | 删除用户                 |
+| POST     | `/api/user/{id}/roles`        | `user:assignRole` | 分配用户角色             |
+| GET      | `/api/role`                   | `role:list`       | 角色列表（分页）         |
+| POST     | `/api/role`                   | `role:add`        | 新增角色                 |
+| PUT      | `/api/role/{id}`              | `role:edit`       | 编辑角色                 |
+| DELETE   | `/api/role/{id}`              | `role:delete`     | 删除角色                 |
+| POST     | `/api/role/{id}/permissions`  | `role:assignPerm` | 分配角色权限             |
+| GET      | `/api/permission`             | `permission:list` | 权限列表（分页）         |
+| GET      | `/api/permission/tree`        | `permission:list` | 获取菜单树               |
+| POST     | `/api/permission`             | `permission:add`  | 新增权限                 |
+| PUT      | `/api/permission/{id}`        | `permission:edit` | 编辑权限                 |
+| DELETE   | `/api/permission/{id}`        | `permission:delete` | 删除权限               |
 
 ---
 
@@ -264,14 +264,14 @@ E:\code\admin_side\
 
 | 表名                | 说明                 |
 |---------------------|----------------------|
-| 	_user            | 用户表               |
-| 	_role            | 角色表               |
-| 	_permission      | 权限/菜单表          |
-| 	_user_role       | 用户-角色关联表      |
-| 	_role_permission | 角色-权限关联表      |
+| `t_user`            | 用户表               |
+| `t_role`            | 角色表               |
+| `t_permission`      | 权限/菜单表          |
+| `t_user_role`       | 用户-角色关联表      |
+| `t_role_permission` | 角色-权限关联表      |
 
 权限模型中：
-- **菜单**（perm_type=1）：侧边栏导航菜单项，有图标和路由路径
-- **按钮/功能**（perm_type=2）：页面中的操作按钮，如新增、编辑、删除等
+- **菜单**（`perm_type=1`）：侧边栏导航菜单项，有图标和路由路径
+- **按钮/功能**（`perm_type=2`）：页面中的操作按钮，如新增、编辑、删除等
 
-> 密码使用 **MD5** 加密，加密方式为 MD5(用户名 + 密码)。初始密码 123456 的 MD5 值为 e10adc3949ba59abbe56e057f20f883e。
+> 密码使用 **MD5** 加密，加密方式为 `MD5(用户名 + 密码)`。初始密码 `123456` 的 MD5 值为 `e10adc3949ba59abbe56e057f20f883e`。
