@@ -1,14 +1,19 @@
-﻿-- ============================================================
--- 管理系统 初始化脚本  (MySQL 5.7+ / 8.0)
 -- ============================================================
--- 数据库: 请先执行: CREATE DATABASE IF NOT EXISTS server DEFAULT CHARSET utf8mb4;
+-- 管理端 全量初始化脚本
+-- 归档日期：2026-10-25
+-- 数据库：MySQL 5.7+ / 8.0
+-- 先执行：CREATE DATABASE IF NOT EXISTS server DEFAULT CHARSET utf8mb4;
+-- 说明：一次性初始化全部业务表 + 初始数据（含操作日志菜单与权限）
+-- ============================================================
 
+-- ----------------- 建表（先删后建） -----------------
 DROP TABLE IF EXISTS t_role_permission;
 DROP TABLE IF EXISTS t_user_role;
 DROP TABLE IF EXISTS t_permission;
 DROP TABLE IF EXISTS t_role;
 DROP TABLE IF EXISTS t_user;
 DROP TABLE IF EXISTS t_sys_config;
+DROP TABLE IF EXISTS t_sys_log;
 
 CREATE TABLE t_user (
   id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -58,7 +63,6 @@ CREATE TABLE t_role_permission (
   PRIMARY KEY (role_id, permission_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色-权限';
 
--- 系统参数表
 CREATE TABLE t_sys_config (
   id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
   param_key   VARCHAR(100) NOT NULL                COMMENT '参数键',
@@ -71,7 +75,24 @@ CREATE TABLE t_sys_config (
   UNIQUE KEY uk_param_key (param_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统参数表';
 
+-- 系统操作日志表（AOP + @Log 用户操作监控）
+CREATE TABLE t_sys_log (
+  id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  username    VARCHAR(50)  DEFAULT NULL COMMENT '操作人用户名',
+  operation   VARCHAR(100) DEFAULT NULL COMMENT '用户操作描述（@Log 注解 value）',
+  time        BIGINT       DEFAULT NULL COMMENT '接口响应时间(毫秒)',
+  method      VARCHAR(200) DEFAULT NULL COMMENT '请求方法：类名.方法名()',
+  params      TEXT         COMMENT '请求参数（敏感字段已脱敏为***）',
+  ip          VARCHAR(64)  DEFAULT NULL COMMENT '客户端IP地址',
+  create_time DATETIME     DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (id),
+  KEY idx_create_time (create_time),
+  KEY idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统操作日志表';
+
+-- ----------------- 初始数据 -----------------
 -- 初始密码: 123456  md5值: e10adc3949ba59abbe56e057f20f883e
+-- 注：本项目密码采用 MD5(用户名+固定盐 mrbird) 二次哈希，下表为对应哈希值
 INSERT INTO t_user (id, username, password, nickname, status) VALUES
   (1, 'admin', '1fedc5a36d03c185065dd2b323886aa5', '超级管理员', 1),
   (2, 'test',  '7a38c13ec5e9310aed731de58bbc4214', '测试账号',   1);
@@ -88,6 +109,8 @@ INSERT INTO t_permission (id, code, name, url, parent_id, perm_type, icon, sort,
   (1,  'sys:user',         '用户管理', '/user',      100, 1, 'User',     1,  1),
   (2,  'sys:role',         '角色管理', '/role',      100, 1, 'Role',     2,  1),
   (3,  'sys:permission',   '权限管理', '/permission',100, 1, 'Lock',     3,  1),
+  (4,  'sys:config',       '系统参数管理', '/sysConfig', 100, 1, 'Operation', 4, 1),
+  (5,  'sys:log',          '操作日志', '/log',       100, 1, 'Document', 5,  1),
   -- 用户管理 按钮/功能
   (10, 'user:list',        '查看用户列表',  '/api/user',        1, 2, NULL, 1, 1),
   (11, 'user:add',         '新增用户',      '/api/user',        1, 2, NULL, 2, 1),
@@ -108,20 +131,20 @@ INSERT INTO t_permission (id, code, name, url, parent_id, perm_type, icon, sort,
   -- 系统参数管理 按钮/功能
   (40, 'sysConfig:list',  '查看系统参数',  '/api/sysConfig',    4, 2, NULL, 1, 1),
   (41, 'sysConfig:edit',  '修改系统参数值','/api/sysConfig/*',  4, 2, NULL, 2, 1),
-  -- 系统管理下的子菜单 (续)
-  (4,  'sys:config',      '系统参数管理', '/sysConfig',  100, 1, 'Operation', 4, 1);
+  -- 操作日志 按钮/功能
+  (50, 'log:list',        '查看操作日志',  '/api/log',         5, 2, NULL, 1, 1);
 
 INSERT INTO t_role_permission (role_id, permission_id) VALUES
-  -- admin 拥有所有权限
-  (1,100),(1,1),(1,2),(1,3),(1,4),(1,10),(1,11),(1,12),(1,13),(1,14),
+  -- admin 拥有所有权限（含操作日志）
+  (1,100),(1,1),(1,2),(1,3),(1,4),(1,5),(1,50),
+  (1,10),(1,11),(1,12),(1,13),(1,14),
   (1,40),(1,41),
   (1,20),(1,21),(1,22),(1,23),(1,24),
   (1,30),(1,31),(1,32),(1,33),
-  -- test 只有查看权限
-  (2,100),(2,1),(2,2),(2,3),(2,4),(2,10),(2,20),(2,30),(2,40);
+  -- test 只有查看权限（含操作日志查看）
+  (2,100),(2,1),(2,2),(2,3),(2,4),(2,5),(2,50),(2,10),(2,20),(2,30),(2,40);
 
 INSERT INTO t_user_role (user_id, role_id) VALUES (1,1),(2,2);
-
 
 -- 初始系统参数数据
 INSERT INTO t_sys_config (id, param_key, param_value, description, regex) VALUES

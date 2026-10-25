@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.pojo.ResponseBo;
 import com.example.demo.pojo.Role;
 import com.example.demo.service.RoleService;
@@ -51,6 +52,7 @@ public class RoleController {
      */
     @PostMapping
     @RequiresPermissions("role:add")
+    @Log("新增角色")
     public ResponseBo add(@RequestBody Role role) {
         roleService.add(role);
         return ResponseBo.ok("新增成功");
@@ -61,6 +63,7 @@ public class RoleController {
      */
     @PutMapping("/{id}")
     @RequiresPermissions("role:edit")
+    @Log("编辑角色")
     public ResponseBo update(@PathVariable Long id, @RequestBody Role role) {
         role.setId(id);
         roleService.update(role);
@@ -72,6 +75,7 @@ public class RoleController {
      */
     @DeleteMapping("/{id}")
     @RequiresPermissions("role:delete")
+    @Log("删除角色")
     public ResponseBo delete(@PathVariable Long id) {
         roleService.delete(id);
         return ResponseBo.ok("删除成功");
@@ -82,6 +86,7 @@ public class RoleController {
      */
     @PostMapping("/{id}/permissions")
     @RequiresPermissions("role:assignPerm")
+    @Log("分配角色权限")
     public ResponseBo assignPermissions(@PathVariable Long id, @RequestBody Map<String, List<Long>> body) {
         roleService.assignPermissions(id, body.get("permissionIds"));
         return ResponseBo.ok("分配权限成功");

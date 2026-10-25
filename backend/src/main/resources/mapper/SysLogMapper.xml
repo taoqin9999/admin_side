@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.SysLogMapper">
+
+    <resultMap id="sysLogMap" type="SysLog">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="operation" property="operation"/>
+        <result column="time" property="time"/>
+        <result column="method" property="method"/>
+        <result column="params" property="params"/>
+        <result column="ip" property="ip"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 保存系统操作日志 -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into t_sys_log(username, operation, time, method, params, ip, create_time)
+        values(#{username}, #{operation}, #{time}, #{method}, #{params}, #{ip}, #{createTime})
+    </insert>
+
+    <!-- 公共查询条件：用户名、操作描述模糊搜索 + 时间范围 -->
+    <sql id="logWhere">
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="operation != null and operation != ''">
+                and operation like concat('%', #{operation}, '%')
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询操作日志（支持用户名、操作描述、时间范围筛选） -->
+    <select id="findPage" resultMap="sysLogMap">
+        select * from t_sys_log
+        <include refid="logWhere"/>
+        order by id desc limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询操作日志总数 -->
+    <select id="countByCondition" resultType="long">
+        select count(*) from t_sys_log
+        <include refid="logWhere"/>
+    </select>
+
+    <!-- 导出：查询全部匹配条件的操作日志（不分页） -->
+    <select id="findForExport" resultMap="sysLogMap">
+        select * from t_sys_log
+        <include refid="logWhere"/>
+        order by id
+    </select>
+
+</mapper>

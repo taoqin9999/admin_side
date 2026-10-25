@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.pojo.Permission;
 import com.example.demo.pojo.ResponseBo;
 import com.example.demo.pojo.User;
@@ -41,6 +42,7 @@ public class LoginController {
      * 验证用户名和密码（MD5 加密后），登录成功返回用户信息、菜单和权限
      */
     @PostMapping("/login")
+    @Log("用户登录")
     public ResponseBo login(@RequestBody Map<String, String> params) {
         String username = params.get("username");
         String password = params.get("password");
@@ -94,6 +96,7 @@ public class LoginController {
      * 退出登录
      */
     @PostMapping("/logout")
+    @Log("退出登录")
     public ResponseBo logout() {
         SecurityUtils.getSubject().logout();
         return ResponseBo.ok("退出成功");

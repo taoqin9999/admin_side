@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.pojo.Permission;
 import com.example.demo.pojo.ResponseBo;
 import com.example.demo.service.PermissionService;
@@ -57,6 +58,7 @@ public class PermissionController {
      */
     @PostMapping
     @RequiresPermissions("permission:add")
+    @Log("新增权限")
     public ResponseBo add(@RequestBody Permission permission) {
         if (permission.getPermType() == null) {
             permission.setPermType(2);
@@ -76,6 +78,7 @@ public class PermissionController {
      */
     @PutMapping("/{id}")
     @RequiresPermissions("permission:edit")
+    @Log("编辑权限")
     public ResponseBo update(@PathVariable Long id, @RequestBody Permission permission) {
         permission.setId(id);
         permissionService.update(permission);
@@ -87,6 +90,7 @@ public class PermissionController {
      */
     @DeleteMapping("/{id}")
     @RequiresPermissions("permission:delete")
+    @Log("删除权限")
     public ResponseBo delete(@PathVariable Long id) {
         permissionService.delete(id);
         return ResponseBo.ok("删除成功");

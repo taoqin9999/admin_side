@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.pojo.PageResult;
 import com.example.demo.pojo.ResponseBo;
 import com.example.demo.pojo.User;
@@ -67,6 +68,7 @@ public class UserController {
      */
     @PostMapping
     @RequiresPermissions("user:add")
+    @Log("新增用户")
     public ResponseBo add(@RequestBody User user) {
         if (userService.findByUsername(user.getUsername()) != null) {
             return ResponseBo.error("用户名已存在");
@@ -85,6 +87,7 @@ public class UserController {
      */
     @PutMapping("/{id}")
     @RequiresPermissions("user:edit")
+    @Log("编辑用户")
     public ResponseBo update(@PathVariable Long id, @RequestBody User user) {
         user.setId(id);
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
@@ -101,6 +104,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @RequiresPermissions("user:delete")
+    @Log("删除用户")
     public ResponseBo delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseBo.ok("删除成功");
@@ -111,6 +115,7 @@ public class UserController {
      */
     @PostMapping("/{id}/roles")
     @RequiresPermissions("user:assignRole")
+    @Log("分配用户角色")
     public ResponseBo assignRoles(@PathVariable Long id, @RequestBody Map<String, List<Long>> body) {
         userService.assignRoles(id, body.get("roleIds"));
         return ResponseBo.ok("分配角色成功");

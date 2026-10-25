@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.annotation.Log;
 import com.example.demo.pojo.PageResult;
 import com.example.demo.pojo.ResponseBo;
 import com.example.demo.pojo.SysConfig;
@@ -51,6 +52,7 @@ public class SysConfigController {
      */
     @PutMapping("/{id}")
     @RequiresPermissions("sysConfig:edit")
+    @Log("修改系统参数")
     public ResponseBo update(@PathVariable Long id, @RequestBody SysConfig sysConfig) {
         sysConfig.setId(id);
         try {
