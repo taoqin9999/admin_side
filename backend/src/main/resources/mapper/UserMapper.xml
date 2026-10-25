@@ -72,6 +72,11 @@
         where id = #{id}
     </update>
 
+    <!-- 仅更新密码（修改自己密码用） -->
+    <update id="updatePassword">
+        update t_user set password = #{password}, update_time = now() where username = #{username}
+    </update>
+
     <!-- 根据 ID 删除用户 -->
     <delete id="deleteById">
         delete from t_user where id = #{id}

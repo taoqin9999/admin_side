@@ -98,4 +98,9 @@ public class UserService {
             }
         }
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePassword(String username, String password) {
+        userMapper.updatePassword(username, password);
+    }
 }

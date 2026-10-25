@@ -120,4 +120,37 @@ public class UserController {
         userService.assignRoles(id, body.get("roleIds"));
         return ResponseBo.ok("分配角色成功");
     }
+
+    /**
+     * 当前登录用户修改自己的密码（自助改密，无需管理权限）
+     * 校验原密码，新密码按 MD5(用户名+盐) 加密保存
+     */
+    @PostMapping("/password")
+    @Log("修改密码")
+    public ResponseBo updatePassword(@RequestBody Map<String, String> body) {
+        String oldPassword = body.get("oldPassword");
+        String newPassword = body.get("newPassword");
+        if (oldPassword == null || oldPassword.trim().isEmpty()) {
+            return ResponseBo.error("原密码不能为空");
+        }
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            return ResponseBo.error("新密码不能为空");
+        }
+        if (newPassword.length() < 6 || newPassword.length() > 50) {
+            return ResponseBo.error("新密码长度需在 6-50 位之间");
+        }
+        User current = (User) org.apache.shiro.SecurityUtils.getSubject().getPrincipal();
+        if (current == null) {
+            return ResponseBo.error("未登录或会话已过期");
+        }
+        User dbUser = userService.findByUsername(current.getUsername());
+        if (dbUser == null) {
+            return ResponseBo.error("用户不存在");
+        }
+        if (!MD5Utils.encrypt(current.getUsername(), oldPassword).equals(dbUser.getPassword())) {
+            return ResponseBo.error("原密码错误");
+        }
+        userService.updatePassword(current.getUsername(), MD5Utils.encrypt(current.getUsername(), newPassword));
+        return ResponseBo.ok("密码修改成功，请重新登录");
+    }
 }
