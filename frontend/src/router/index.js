@@ -12,6 +12,7 @@ import UserList from '../views/user/UserList.vue'
 import RoleList from '../views/role/RoleList.vue'
 import PermissionList from '../views/permission/PermissionList.vue'
 import SysConfigList from '../views/sysConfig/SysConfigList.vue'
+import LogList from '../views/log/LogList.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: Login },
@@ -24,7 +25,8 @@ const routes = [
       { path: 'user', name: 'User', component: UserList, meta: { title: '用户管理', perm: 'user:list' } },
       { path: 'role', name: 'Role', component: RoleList, meta: { title: '角色管理', perm: 'role:list' } },
       { path: 'permission', name: 'Permission', component: PermissionList, meta: { title: '权限管理', perm: 'permission:list' } },
-      { path: 'sysConfig', name: 'SysConfig', component: SysConfigList, meta: { title: '系统参数管理', perm: 'sysConfig:list' } }
+      { path: 'sysConfig', name: 'SysConfig', component: SysConfigList, meta: { title: '系统参数管理', perm: 'sysConfig:list' } },
+      { path: 'log', name: 'Log', component: LogList, meta: { title: '操作日志', perm: 'log:list' } }
     ]
   }
 ]

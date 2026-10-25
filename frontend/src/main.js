@@ -4,6 +4,7 @@
  */
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
@@ -18,7 +19,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(ElementPlus)
+// 使用中文 locale（日期选择器、分页等组件文案显示为中文）
+app.use(ElementPlus, { locale: zhCn })
 app.use(router)
 app.use(createPinia())
 
