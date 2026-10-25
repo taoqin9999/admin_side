@@ -28,3 +28,8 @@ export function assignUserRoles(id, roleIds) {
   return request.post(`/user/${id}/roles`, { roleIds })
 }
 
+// 当前登录用户修改自己的密码
+export function updatePassword(data) {
+  return request.post('/user/password', data)
+}
+
